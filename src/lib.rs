@@ -77,10 +77,8 @@ mod tests {
             if window < 1 {
                 return quickcheck::TestResult::discard();
             }
-            let mut total_length = 0;
-            for c in chunk(&data, window) {
-                total_length = total_length + c.len();
-            }
+            let total_length = chunk(&data, window).fold(0, |size, chunk| size + chunk.len() );
+
             quickcheck::TestResult::from_bool(total_length == data.len())
         }
 
