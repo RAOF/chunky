@@ -90,5 +90,13 @@ mod tests {
 
             quickcheck::TestResult::from_bool(fused_chunks == data)
         }
+
+        fn no_zero_length_chunks(data: Vec<u8>, window : usize) -> quickcheck::TestResult {
+            if window < 1 {
+                return quickcheck::TestResult::discard();
+            }
+
+            quickcheck::TestResult::from_bool(chunk(&data, window).all(|chunk| chunk.len() > 0))
+        }
    }
 }
