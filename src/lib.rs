@@ -40,10 +40,9 @@ impl<'a> Iterator for ChunkIter<'a> {
         }
         let next_pos = next_cutpoint(&self.input[self.current_pos..], self.window);
 
-        eprintln!("Current pos: {:?}, next_pos: {:?}", self.current_pos, next_pos);
-
         let chunk = &self.input[self.current_pos..self.current_pos + next_pos];
         self.current_pos += next_pos;
+
         Some(chunk)
     }
 }
