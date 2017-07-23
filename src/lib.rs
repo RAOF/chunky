@@ -25,25 +25,35 @@ fn next_cutpoint(input : &[u8], window : usize) -> usize {
     input.len()
 }
 
-pub fn chunk(input: &[u8], window: usize) -> Vec<&[u8]> {
-    if input.len() == 0 {
-        return vec![input];
+pub struct ChunkIter<'a> {
+    input : &'a[u8],
+    current_pos : usize,
+    window : usize,
+}
+
+impl<'a> Iterator for ChunkIter<'a> {
+    type Item = &'a[u8];
+
+    fn next(&mut self) -> Option<&'a[u8]> {
+        if self.current_pos == self.input.len() {
+            return None;
+        }
+        let next_pos = next_cutpoint(&self.input[self.current_pos..], self.window);
+
+        eprintln!("Current pos: {:?}, next_pos: {:?}", self.current_pos, next_pos);
+
+        let chunk = &self.input[self.current_pos..self.current_pos + next_pos];
+        self.current_pos += next_pos;
+        Some(chunk)
     }
+}
 
-    let mut chunked_input = Vec::new();
-    let mut current_pos : usize = 0;
-    let mut next_pos = next_cutpoint(input, window);
-
-    while next_pos < input.len() {
-        println!("current_pos: {:?}, next_pos: {:?}", current_pos, next_pos);
-        chunked_input.push(&input[current_pos..next_pos]);
-        current_pos = next_pos;
-        next_pos = next_cutpoint(&input[current_pos..], window) + current_pos;
+pub fn chunk(input: &[u8], window: usize) -> ChunkIter {
+    ChunkIter {
+        input : input,
+        current_pos : 0,
+        window : window
     }
-
-    chunked_input.push(&input[current_pos .. input.len()]);
-
-    chunked_input
 }
 
 #[cfg(test)]
